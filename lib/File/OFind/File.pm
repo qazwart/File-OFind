@@ -10,17 +10,17 @@ use Cwd qw(realpath);
 use File::Spec::Functions qw(:ALL);
 use File::stat;
 
-sub new {
+sub _new {
     my $class = shift;
     my $file  = shift;
 
     my $self = {};
     bless $self, $class;
-    $self->Name($file);
+    $self->name($file);
     return $self;
 }
 
-sub Name {
+sub name {
     my $self = shift;
     my $name = shift;
 
@@ -30,13 +30,7 @@ sub Name {
     return $self->{NAME};
 }
 
-sub File {
-    my $self = shift;
-
-    return $self->Name;
-}
-
-sub Wanted {
+sub wanted {
     my $self   = shift;
     my $wanted = shift;
 
@@ -46,25 +40,25 @@ sub Wanted {
     return $self->{WANTED};
 }
 
-sub Native {
+sub native {
     my $self = shift;
 
-    my $name = $self->Name;
+    my $name = $self->name;
     my @path = splitpath($name);
     return catpath(@path);
 }
 
-sub Basename {
+sub basename {
     my $self = shift;
 
-    my ( $volume, $path, $file ) = splitpath( $self->Name );
+    my ( $volume, $path, $file ) = splitpath( $self->name );
     return $file;
 }
 
-sub Dirname {
+sub dirname {
     my $self = shift;
 
-    my ( $volume, $path, $file ) = splitpath( $self->Name );
+    my ( $volume, $path, $file ) = splitpath( $self->name );
     my $dir_name;
     if ( defined $volume ) {
         $dir_name = catpath( $volume, $path, "" );
@@ -76,19 +70,7 @@ sub Dirname {
     return $dir_name;
 }
 
-sub Dir {
-    my $self = shift;
-
-    return $self->Dirname;
-}
-
-sub Directory {
-    my $self = shift;
-
-    return $self->Dirname;
-}
-
-sub Suffix {
+sub suffix {
     my $self        = shift;
     my $suffix_mark = shift;
 
@@ -96,27 +78,21 @@ sub Suffix {
         $suffix_mark = ".";
     }
 
-    my $file = $self->Name;
+    my $file = $self->name;
     ( my $suffix = $file ) =~ s/^.*\Q$suffix_mark\E//;
     return $suffix;
 }
 
-sub Absolute {
+sub absolute {
     my $self = shift;
 
-    return realpath( $self->Name );
+    return realpath( $self->name );
 }
 
-sub Abs {
+sub type {
     my $self = shift;
 
-    return $self->Absolute;
-}
-
-sub Type {
-    my $self = shift;
-
-    my $file = $self->Name;
+    my $file = $self->name;
     if ( -l $file ) {
         return "l";
     }
@@ -146,149 +122,101 @@ sub Type {
     }
 }
 
-sub Dev {
+sub dev {
     my $self = shift;
 
-    my $stat = stat( $self->Name );
+    my $stat = stat( $self->name );
     return $stat->dev;
 }
 
-sub Device_Number {
+sub ino {
     my $self = shift;
-
-    return $self->Dev;
-}
-
-sub Ino {
-    my $self = shift;
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
 
     return $stat->ino;
 }
 
-sub Inode {
+sub mode {
     my $self = shift;
 
-    return $self->Ino;
-}
-
-sub Mode {
-    my $self = shift;
-
-    my $stat = stat $self->File;
+    my $stat = stat $self->name;
     return $stat->mode;
 }
 
-sub Permissions {
+sub permissions {
     my $self = shift;
 
-    return sprintf "%04o", $self->Mode & oct( 7777 );
+    return sprintf "%04o", $self->mode & oct( 7777 );
 }
 
-sub Nlink {
+sub nlink {
     my $self = shift;
 
-    my $stat = stat $self->File;
+    my $stat = stat $self->name;
     return $stat->nlink;
 }
 
-sub Number_Of_Links {
+sub uid {
     my $self = shift;
 
-    return $self->Nlink;
-}
-
-sub Uid {
-    my $self = shift;
-
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->uid;
 }
 
-sub User_Id {
+sub gid {
     my $self = shift;
 
-    return $self->Uid;
-}
-
-sub Gid {
-    my $self = shift;
-
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->gid;
 }
 
-sub Group_Id {
+sub rdev {
     my $self = shift;
 
-    return $self->Gid;
-}
-
-sub Rdev {
-    my $self = shift;
-
-    my $stat = $self->Name;
+    my $stat = $self->name;
     return $stat->rdev;
 }
 
-sub Device_Id {
+sub size {
     my $self = shift;
 
-    return $self->Rdev;
-}
-
-sub Size {
-    my $self = shift;
-
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->size;
 }
 
-sub Atime {
+sub atime {
     my $self = shift;
 
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->atime;
 }
 
-sub Mtime {
+sub mtime {
     my $self = shift;
 
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->mtime;
 }
 
-sub Ctime {
+sub ctime {
     my $self = shift;
 
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->ctime;
 }
 
-sub Blksize {
+sub blksize {
     my $self = shift;
 
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->blksize;
 }
 
-sub Block_Size {
+sub blocks {
     my $self = shift;
 
-    return $self->Blksize;
-}
-
-sub Blocks {
-    my $self = shift;
-
-    my $stat = stat $self->Name;
+    my $stat = stat $self->name;
     return $stat->blocks;
-}
-
-sub Number_Of_Blocks {
-    my $self = shift;
-
-    return $self->Blocks;
 }
 
 1;
@@ -303,54 +231,38 @@ File::OFind::File;
 
 =head1 SYNOPSIS
 
-    my $file = File::OFind::File->new($file);
+    while (my $file = $find->next) {   #$find is a member of the File::OFind class
 
-    print "File Name: " . $file->Name . "\n";
-    print "File Directory: " . $file->Dirname . "\n";
-    print "File Basename: " . $file->Basename . "\n";
-    print "File Suffix: " . $file->Suffix . "\n";
+	print "File Name: " . $file->name . "\n";
+	print "File Directory: " . $file->dirname . "\n";
+	print "File Basename: " . $file->basename . "\n";
+	print "File Suffix: " . $file->suffix . "\n";
+    }
 
 =head1 DESCRIPTION
 
-This is the Internal stack method used by the C<File::OFind> method.
-This is distributed with C<File::OFind> and is not meant to be an
-independent module.
-
-The C<File::OFind>'s C<Next> method returns a File::OFind::File object.
-You can get information about this object using the methods described
-below. These methods are also listed in the File::OFind POD.
-
-=head1 Constructor
-
-=over 10
-
-=item new
-
-The C<new> constructor is called by the C<File::OFind> module when it
-finds a file to return. You should never call the C<new> constructor
-in your program.
-
-=back
+This is a type of object that's returned by the C<File::OFind->next>
+method.
 
 =head1 METHODS
 
 These are the methods of the c<File::Find::File> object that gets
-returned to you via the Next method or that is passed to your 
-subroutine via the Wanted method.
+returned to you via the next method or that is passed to your 
+subroutine via the C<< File::OFind->sub >> method.
 
 =over 10
 
-=item Name, File
+=item name
 
 Full name of the file. Similar to C<$File::Find::name>.
 
-=item Native
+=item native
 
 Name of the file written in a format compatible with the current
 operating system. For example, in a Windows PC, the name will have
 backslashes instead of forward slashes as directory separators.
 
-=item Wanted
+=item wanted
 
 The File::OFind module allows you to set a reference to a subroutine
 when searching for files. If that subroutine returns a null value, that
@@ -358,28 +270,28 @@ file is not included in the list of files found. However, if that
 subroutine does return a value, that value is returned by the Wanted
 method of the Find::OFile::File object.
 
-=item Basename
+=item basename
 
 The file name without the directory information. Sort of like the Unix
 C<basename> command.
 
-=item Dirname, Dir, Directory
+=item dirname
 
 The parent directory of the file. Similar to the Unix C<dirname>
 function, but made to be more file system independent.
 
-=item Suffix
+=item suffix
 
 The file suffix. This is the part after the very last period or whatever
 string you specify. If there is no suffix divider, a null string is
 returned.
 
-=item Absolute, Abs
+=item absolute
 
 The absolute file name from the root directory. Normally, file names are
 reletive to the current directory.
 
-=item Type
+=item type
 
 The file type. This returns a single letter specifying the file type,
 the valid values are:
@@ -424,60 +336,60 @@ Unknown file type
 
 =back
 
-=item Dev, Device_Number
+=item dev
 
 Device Number of File System
 
-=item Ino, Inode
+=item ino
 
 I-Node Number
 
-=item Mode
+=item mode
 
 Type and Permission
 
-=item Permissions
+=item permissions
 
 This takes the Mode and masks out the Permissions and prints them out in
 Octal. This makes your life a wee bit easier.
 
-=item Nlink, Number_Of_Links
+=item nlink
 
 Number of Hard Links to File
 
-=item Uid, User_Id
+=item uid
 
 Numeric User ID
 
-=item Gid, Group_Id
+=item gid
 
 Numeric Group ID
 
-=item Rdev, Device_Id
+=item rdev
 
 The Device Identifier (for special devices)
 
-=item Size
+=item size
 
 File size in bytes
 
-=item Atime
+=item atime
 
 Last Access Time for File is Seconds since the Epoc
 
-=item Mtime
+=item mtime
 
 Last modification Time for File in Seconds since the Epoc
 
-=item Ctime
+=item ctime
 
 Last inode Change  Time for File in Seconds since the Epoc
 
-=item Blksize, Block_Size
+=item blksize
 
 Perferred Block Size for the file System's I/O
 
-=item Blocks, Number_Of_Blocks
+=item blocks
 
 Number of blocks allocated
 

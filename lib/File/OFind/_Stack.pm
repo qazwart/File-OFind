@@ -4,28 +4,7 @@ package File::OFind::_Stack;
 use strict;
 use warnings;
 
-use constant {
-    NEW     => 1,
-    POP     => 2,
-    PUSH    => 3,
-    SHIFT   => 4,
-    UNSHIFT => 5,
-};
-
-# WHAT'S THIS?
-#
-# In object oriented programming, the struture of your objects should be
-# in a single method. In order to do this, I have a single B<private>
-# _Stack method handle all operations of the stack. Then, I define
-# public methods for actually manipulating the stack that call this
-# private method. Thus, the internal structure of the object is stored
-# in a single location.
-#
-# DO NOT DIRECTLY USE THIS METHOD. Use the public methods. The methods
-# that are documented in the POD. The methods that don't start with an
-# underscore.
-#
-sub _Stack {
+sub _stack {
     my $self     = shift;
     my $list_ref = shift;
 
@@ -39,45 +18,49 @@ sub _Stack {
 }
 
 sub new {
-    my $class = shift;
+    my $class = CORE::shift;
 
     my $self = {};
     bless $self, $class;
-    $self->_Stack;
+    $self->_stack;
     return $self;
 }
 
-sub Pop {
-    my $self = shift;
+sub pop {
+    my $self = CORE::shift;
 
-    my $list_ref = $self->_Stack;
+    my $list_ref = $self->_stack;
     return pop @{$list_ref};
 }
 
-sub Push {
-    my $self = shift;
+sub push {
+    my $self = CORE::shift;
     my @list = @_;
 
-    my $list_ref = $self->_Stack;
+    my $list_ref = $self->_stack;
     push @{$list_ref}, @list;
     return @list;
 }
 
-sub Shift {
-    my $self = shift;
+# Just Nop'd these for a while until I figure out how to get around
+# the Core error message
 
-    my $list_ref = $self->_Stack;
+sub shift {
+    my $self = CORE::shift;
+
+    my $list_ref = $self->_stack;
     return shift @{$list_ref};
 }
 
-sub Unshift {
-    my $self = shift;
+sub unshift {
+    my $self = CORE::shift;
     my @list = @_;
 
-    my $list_ref = $self->_Stack;
+    my $list_ref = $self->_stack;
     unshift @{$list_ref}, @list;
     return @list;
 }
+
 1;
 
 __END__
@@ -91,10 +74,10 @@ File::OFind::_Stack
 =head1 SYNOPSIS
 
     $stack = File::OFind::_Stack->new;
-    $stack->Push($item);
-    $stack->Unshift($item);
-    $item = $stack->Pop;
-    $item = $stack->Shift;
+    $stack->push($item);
+    $stack->unshift($item);
+    $item = $stack->pop;
+    $item = $stack->shift;
 
 =head1 DESCRIPTION
 
@@ -102,15 +85,13 @@ This is the Internal stack method used by the C<File::OFind> method. This
 is distributed with C<File::OFind> and is not meant to be an independent
 module.
 
-=head1 CONSTRUCTOR
+=head1 CONSTRUCTORS
 
 =over 10
 
 =item new
 
-Creates a new stack.
-
-    my $stack = File::OFind::_Stack->new;
+Create a new empty stack object
 
 =back
 
@@ -118,29 +99,29 @@ Creates a new stack.
 
 =over 10
 
-=item Push
+=item push
 
 Pushes a list of items on the end of the stack.
 
-    $stack->Push(@list_of_items);
+    $stack->push(@list_of_items);
 
-=item Pop
+=item pop
 
 Pops off an item at the end of the stack.
 
-    my $item = $stack->Pop;
+    my $item = $stack->pop;
 
-=item Unshift
+=item unshift
 
 Pushes a list of items at the B<beginning> of the stack.
 
-    my $stack->Unshift(@list_of_items);
+    my $stack->unshift(@list_of_items);
 
-=item Shift
+=item shift
 
 Pops off an item at the B<beginning> of the stack.
 
-    my $item = $stack->Shift;
+    my $item = $stack->shift;
 
 =back
 

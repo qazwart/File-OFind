@@ -3,7 +3,7 @@
 
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More tests => 4;
 
 # Test #1:  Whether File::OFind is installed
 BEGIN { use_ok qq(File::OFind); }
@@ -30,26 +30,15 @@ subtest "Testing Basic Directory Opening" => sub {
 };
 
 # Test #4:
-subtest "Checking dashes and case in options" => sub {
-    plan tests => 2;
-    $find = File::OFind->new( ".", { -Level => 3 }, );
-    is( $find->Level, 3, qq(Testing option "-Level") );
-
-    $find = File::OFind->new( ".", { "--LEVEL" => 3 }, );
-    is( $find->Level, 3, qq(Testing option "--LEVEL") );
-};
-
-# Test #5:
 subtest "Checking Constructor Options" => sub {
-    plan tests => 4;
+    plan tests => 3;
     $find = File::OFind->new( ".", { follow => 1, level => 3 } );
-    is( $find->Follow, 1, qq(Testing Follow Setting) );
+    is( $find->follow, 1, qq(Testing Follow Setting) );
 
     $find =
       File::OFind->new( ".", { follow => 1, level => 3, sub => \&bar, }, "..",
       );
-    ok( $find->Sub,      "Subroutine setting worked" );
-    ok( $find->Function, "Testing Function alias" );
+    ok( $find->sub,      "Subroutine setting worked" );
 
     eval {
         $find =

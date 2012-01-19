@@ -12,14 +12,14 @@ sub new {
 
     my $self = {};
     bless $self, $class;
-    $self->Level($level);
-    $self->File($file);
-    $self->Already_Processed($already_processed_flag);
+    $self->level($level);
+    $self->file($file);
+    $self->already_processed($already_processed_flag);
 
     return $self;
 }
 
-sub Level {
+sub level {
     my $self  = shift;
     my $level = shift;
 
@@ -34,7 +34,7 @@ sub Level {
     return $self->{LEVEL};
 }
 
-sub File {
+sub file {
     my $self = shift;
     my $file = shift;
 
@@ -44,7 +44,7 @@ sub File {
     return $self->{FILE};
 }
 
-sub Already_Processed {
+sub already_processed {
     my $self = shift;
     my $flag = shift;
 
@@ -72,8 +72,8 @@ File::OFind::_Stack::Obj
 
     $stack_obj = File::OFind::_Stack::Obj($file, $level);
 
-    my $file = $stack_obj->File;
-    my $level = $stack_obj->Level;
+    my $file = $stack_obj->file;
+    my $level = $stack_obj->level;
 
 =head1 DESCRIPTION
 
@@ -109,21 +109,21 @@ or whether this was already done and the directory should be returned.
 
 =over 10
 
-=item File
+=item file
 
 Sets or gets the name of the file:
 
     $stack->File($file);
     my $file = $stack->File;
 
-=item Level
+=item level
 
 Sets of gets the level for that file. Must be an integer 0 or greater.
 
     $stack->Level(2);
     my $level = $stack->Level;
 
-=item Already_Processed
+=item already_processed
 
 Sets or gets whether or not the directory has had its contents already
 dumped into the stack. This is used for depth first searches where the

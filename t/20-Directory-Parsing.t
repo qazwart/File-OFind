@@ -3,7 +3,6 @@
 
 use strict;
 use warnings;
-use feature qw(say);
 
 use File::OFind;
 
@@ -59,8 +58,8 @@ pass("Temporary test root directory created: $temp_dir");
 sub wanted {
     my $self = shift;
 
-    return if not $self->Type eq "f";
-    my $file_name = $self->Name;
+    return if not $self->type eq "f";
+    my $file_name = $self->name;
     return $file_name;
 }
 
@@ -118,8 +117,8 @@ subtest "Basic Tree Follow Test" => sub {
     pass("OFile::OFind object created");
 
     my @fetched_file_list;
-    while ( my $file_obj = $find->Next ) {
-        my $file_obj_name = $file_obj->Name;
+    while ( my $file_obj = $find->next ) {
+        my $file_obj_name = $file_obj->name;
         if ( -f $file_obj_name ) {
             push @fetched_file_list, $file_obj_name;
         }
@@ -141,14 +140,14 @@ subtest "Follow Tree using Wanted Function" => sub {
     #
     chdir $temp_dir;
     my $find;
-    eval { $find = File::OFind->new( "a", { Sub => \&wanted }, ); };
+    eval { $find = File::OFind->new( "a", { sub => \&wanted }, ); };
     if ($@) {
         BAIL_OUT("Could not create File::OFind object: $@");
     }
     pass("OFile::OFind object created");
     my @file_list;
-    while ( my $file_obj = $find->Next ) {
-        push @file_list, $file_obj->Wanted;
+    while ( my $file_obj = $find->next ) {
+        push @file_list, $file_obj->wanted;
     }
     is_deeply( \@a_file_list, \@file_list,
         "Fetched tree matches expected list" );
@@ -161,13 +160,13 @@ subtest "Follow tree using Wanted and Next_File Method" => sub {
 
     chdir $temp_dir;
     my $find;
-    eval { $find = File::OFind->new( "a", { Function => \&wanted }, ); };
+    eval { $find = File::OFind->new( "a", { sub => \&wanted }, ); };
     if ($@) {
         BAIL_OUT("Could not create File::OFind object: $@");
     }
     pass("OFile::OFind object created");
     my @file_list;
-    while ( my $file_name = $find->Next_File ) {
+    while ( my $file_name = $find->next_file ) {
         push @file_list, $file_name;
     }
     is_deeply( \@a_file_list, \@file_list,
@@ -179,7 +178,7 @@ subtest "Testing Depth First Functionality" => sub {
 
     chdir $temp_dir;
     my $find;
-    eval { $find = File::OFind->new( "a", { Depth => 1 }, ); };
+    eval { $find = File::OFind->new( "a", { depth => 1 }, ); };
     if ($@) {
         BAIL_OUT("Could not create File::OFind object: $@");
     }
@@ -187,7 +186,7 @@ subtest "Testing Depth First Functionality" => sub {
 
     my $test_flag = 0;
     my $prev_file;
-    while ( my $file_name = $find->Next_File ) {
+    while ( my $file_name = $find->next_file ) {
         if ( -d $file_name and defined $prev_file ) {
             my $dir_name = $file_name;
             if ( dirname($prev_file) ne $dir_name ) {
@@ -206,14 +205,14 @@ subtest "Level Testing" => sub {
     my $find;
     plan tests => 8;
     foreach my $level ( 0 .. 3 ) {
-        eval { $find = File::OFind->new( "a", { Level => $level }, ); };
+        eval { $find = File::OFind->new( "a", { level => $level }, ); };
         if ($@) {
             BAIL_OUT("Could not create File::OFind object: $@");
         }
         pass("OFile::OFind object created");
 
         my $too_deep_count = 0;
-        while ( my $file = $find->Next_File ) {
+        while ( my $file = $find->next_file ) {
             if ( ( $level + 2 ) < scalar split( /\//, $file ) ) {
                 $too_deep_count++;
             }
@@ -235,8 +234,8 @@ SKIP: {
             $find = File::OFind->new(
                 "a",
                 {
-                    Follow => 1,
-                    Sub    => \&wanted
+                    follow => 1,
+                    sub    => \&wanted
                 },
             );
         };
@@ -252,7 +251,7 @@ SKIP: {
         my @complete_file_list = ( @a_file_list, @b_file_list );
 
         my @file_list;
-        while ( my $file_name = $find->Next_File ) {
+        while ( my $file_name = $find->next_file ) {
             push @file_list, $file_name;
         }
         is_deeply( \@complete_file_list, \@file_list,
@@ -268,7 +267,7 @@ SKIP: {
         my $inode = $stat->ino;
 
         my $find;
-        eval { $find = File::OFind->new( "a", { Follow => 1 }, ); };
+        eval { $find = File::OFind->new( "a", { follow => 1 }, ); };
         if ($@) {
             BAIL_OUT("Could not create File::OFind object: $@");
         }
@@ -276,11 +275,11 @@ SKIP: {
 
         eval {
             my $loop_detect = 0;
-            while ( my $file_obj = $find->Next ) {
+            while ( my $file_obj = $find->next ) {
                 if ( $loop_detect > 3 ) {
                     last;
                 }
-                if ( $file_obj->Inode == $inode ) {
+                if ( $file_obj->inode == $inode ) {
                     $loop_detect++;
                 }
             }
