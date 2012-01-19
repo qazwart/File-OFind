@@ -14,7 +14,7 @@ use File::OFind::File;
 use File::OFind::_Stack;
 use File::OFind::_Stack::Obj;
 
-our $VERSION = '1.00';
+our $VERSION = '1.01';
 
 sub new {
     my $class = shift;
